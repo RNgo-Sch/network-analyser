@@ -59,6 +59,9 @@ class Host:
         for flow in self.outbound_flows:
             self.ether.add(flow.source_ether)
 
+    def key(self):
+        return (self.ip, self.ether)
+
     def __hash__(self):
         return hash(self.ip)
 
