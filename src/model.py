@@ -41,9 +41,6 @@ class UniFlow:
         return NotImplemented
 
 
-"""
-This class exists as a method to summarise individual host information.
-"""
 class Host:
     """Summary of an individual host."""
     def __init__(self, ip):
