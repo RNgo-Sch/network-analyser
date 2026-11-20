@@ -4,54 +4,50 @@ The models are designed to document hosts and the edges between them used for co
 """
 
 # class defintitions
-"""
-This class documents the edges between hosts.
-For MVP1, it represents the unidirectional flow from one host (a source) to another host (a destination)
-"""
 class UniFlow:
-    # source information
-    source_ip: str
-    source_port: int
-    source_ether: str
-    # destination information
-    dest_ip: str
-    dest_port: int
-    # protocol for flow
-    protocol: int
-    # simple packet stats
-    packets_n: int = 0
-    first_pkt_id: int = None
-
-    def __init__(self, source_ip, source_port, source_ether, dest_ip, dest_port, first_pkt_id = None, protocol = None):
+    """
+    This class documents the edges between hosts.
+    For MVP1, it represents the unidirectional flow from one host (a source) to another host (a destination)
+    """
+    def __init__(self, source_ip, source_port, source_ether, dest_ip, dest_port,
+                 first_pkt_id=None, protocol=None):
+        # connection identifiers
         self.source_ip = source_ip
         self.source_port = source_port
-        self.source_ether = source_ether # should be kept for future identification purposes
+        self.source_ether = source_ether
         self.dest_ip = dest_ip
         self.dest_port = dest_port
-    
-        self.first_pkt_id = self.first_pkt_id
+        
+        # packet information
+        self.first_pkt_id = first_pkt_id
+        self.packets_n = 0
+
+        # other information
         self.protocol = protocol
 
     def count_packet(self):
         self.packets_n += 1
+
+    def key(self):
+        return (self.source_ip, self.source_port, self.source_ether,
+                self.dest_ip, self.dest_port, self.protocol)
 
 
 """
 This class exists as a method to summarise individual host information.
 """
 class Host:
-    # host information
-    ip: str
-    ether: set[str] = {} # in case multiple network devices associated with single IP
-
-    # UniFlow edges outgoing from here
-    outbound_flows: set[UniFlow] = {}
+    """Summary of an individual host."""
+    def __init__(self, ip):
+        self.ip = ip
+        self.ether = set()
+        self.outbound_flows = set()
 
     def add_edge(self, flow: UniFlow):
         self.outbound_flows.add(flow)
 
-    """Function adds all source ethernet addresses from outbound flows to the set"""
     def enumerate_ether_addr(self):
+        """Collect source ethernet addresses from outbound flows into self.ether."""
         for flow in self.outbound_flows:
-            self.outbound_flows.add(flow.source_ether)
+            self.ether.add(flow.source_ether)
 
