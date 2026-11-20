@@ -32,6 +32,14 @@ class UniFlow:
         return (self.source_ip, self.source_port, self.source_ether,
                 self.dest_ip, self.dest_port, self.protocol)
 
+    def __hash__(self):
+        return hash(self.key())
+
+    def __eq__(self, other):
+        if isinstance(other, UniFlow):
+            return self.key() == other.key()
+        return NotImplemented
+
 
 """
 This class exists as a method to summarise individual host information.
@@ -50,4 +58,12 @@ class Host:
         """Collect source ethernet addresses from outbound flows into self.ether."""
         for flow in self.outbound_flows:
             self.ether.add(flow.source_ether)
+
+    def __hash__(self):
+        return hash(self.ip)
+
+    def __eq__(self, other):
+        if isinstance(other, Host):
+            return self.ip == other.ip
+        return NotImplemented
 
