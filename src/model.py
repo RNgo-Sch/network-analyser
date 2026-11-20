@@ -34,3 +34,24 @@ class UniFlow:
 
     def count_packet(self):
         self.packets_n += 1
+
+
+"""
+This class exists as a method to summarise individual host information.
+"""
+class Host:
+    # host information
+    ip: str
+    ether: set[str] = {} # in case multiple network devices associated with single IP
+
+    # UniFlow edges outgoing from here
+    outbound_flows: set[UniFlow] = {}
+
+    def add_edge(self, flow: UniFlow):
+        self.outbound_flows.add(flow)
+
+    """Function adds all source ethernet addresses from outbound flows to the set"""
+    def enumerate_ether_addr(self):
+        for flow in self.outbound_flows:
+            self.outbound_flows.add(flow.source_ether)
+
