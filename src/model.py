@@ -45,17 +45,19 @@ class Host:
     """Summary of an individual host."""
     def __init__(self, ip):
         self.ip = ip
-        self.ether = set()
         self.outbound_flows = set()
 
     def add_edge(self, flow: UniFlow):
         self.outbound_flows.add(flow)
 
-    def enumerate_ether_addr(self):
-        """Collect source ethernet addresses from outbound flows into self.ether."""
-        for flow in self.outbound_flows:
-            self.ether.add(flow.source_ether)
+    def get_ether_addr(self):
+        """Enumerate source ethernet addresses from outbound flows"""
+        return set(flow.source_ether for flow in self.outbound_flows)
 
+    def get_ports(self):
+        """Enumerate source ports from outbound flows"""
+        return set(flow.source_port for flow in self.outbound_flows)
+        
     def key(self):
         return (self.ip, self.ether)
 
