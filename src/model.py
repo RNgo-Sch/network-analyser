@@ -29,6 +29,8 @@ class UniFlow:
         self.packets_n += 1
 
     def key(self):
+        # key contains routing information and protocol under assumption that this identifies a given convo
+        # does not contain first packet id, as it does not make sense to match
         return (self.source_ip, self.source_port, self.source_ether,
                 self.dest_ip, self.dest_port, self.protocol)
 
@@ -36,6 +38,7 @@ class UniFlow:
         return hash(self.key())
 
     def __eq__(self, other):
+        # check if the flow is from the same conversation according to key
         if isinstance(other, UniFlow):
             return self.key() == other.key()
         return NotImplemented
@@ -51,11 +54,11 @@ class Host:
         self.outbound_flows.add(flow)
 
     def get_ether_addr(self):
-        """Enumerate source ethernet addresses from outbound flows"""
+        """Get all source ethernet addresses from outbound flows"""
         return set(flow.source_ether for flow in self.outbound_flows)
 
     def get_ports(self):
-        """Enumerate source ports from outbound flows"""
+        """Get all source ports from outbound flows"""
         return set(flow.source_port for flow in self.outbound_flows)
         
     def key(self):
