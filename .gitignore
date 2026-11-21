@@ -182,3 +182,4 @@ cython_debug/
 
 # sample pcap
 ./test/iot_sameple.pcap
+test/test_iot_sample.pcap

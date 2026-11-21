@@ -2,6 +2,8 @@
 This file contains classes designed to model an IoT network
 The models are designed to document hosts and the edges between them used for communication
 """
+from scapy.all import Ether, IP, TCP, UDP
+from scapy.utils import PcapReader
 
 # class defintitions
 class UniFlow:
@@ -62,7 +64,7 @@ class Host:
         return set(flow.source_port for flow in self.outbound_flows)
         
     def key(self):
-        return (self.ip, self.ether)
+        return (self.ip, self.get_ether_addr())
 
     def __hash__(self):
         return hash(self.ip)
@@ -102,4 +104,29 @@ class Network:
                     if edge.source_ip == host.ip:
                         host.add_edge(edge)
                         break
-    
+
+    def read_pcap(self, path: str):
+        """Function gets a path to a .pcap and models the network according to packets contained"""
+        with PcapReader(path) as pcap:
+            for i, p in enumerate(pcap, start=1):
+                data = [None] * 7
+                # list indices correspond to arg position in UniFlow instantiator
+                # TODO either make constants or write builder class for UniFlow
+                # get routing information
+                if p.haslayer(Ether): data[2] = p[Ether].src
+                if p.haslayer(IP):
+                    data[0], data[3] = p[IP].src, p[IP].dst
+                # get transport layer information
+                if TCP in p:
+                    data[1], data[4] = p[TCP].sport, p[TCP].dport
+                    data[6] = TCP
+                elif UDP in p:
+                    data[1], data[4] = p[UDP].sport, p[UDP].dport
+                    data[6] = UDP
+                # other
+                data[5] = i
+
+                if None not in data:
+                    self.add_edge(UniFlow(*data))
+                else: 
+                    continue

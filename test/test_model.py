@@ -1,4 +1,5 @@
 import sys
+import os
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from model import Host, UniFlow, Network
@@ -33,17 +34,27 @@ class TestUniFlow:
 
 
 class TestNetwork:
-    def __init__(self):
-        self.network: Network = Network()
-        for edge in TestUniFlow().get_example():
-            self.network.add_edge(edge)
-
     def test_enum_hosts(self):
-        self.network.enumerate_hosts()
-        assert len(self.network.hosts) == 3
+        network: Network = Network()
+        for edge in TestUniFlow().get_example():
+            network.add_edge(edge)
+        network.enumerate_hosts()
+        assert len(network.hosts) == 3
+
+    def test_read_pcap(self):
+        network: Network = Network()
+        path = os.path.abspath("test_iot_sample.pcap")
+        network.read_pcap(path)
+        network.enumerate_hosts()
+        print(len(network.hosts))
+        for edge in network.edges:
+            print(edge.key())
+        for host in network.hosts:
+            print(host.key())
 
 
 if __name__ == "__main__":
     TestUniFlow().test_defaults()
     TestUniFlow().test_hash_compare()
     TestNetwork().test_enum_hosts()
+    TestNetwork().test_read_pcap()
