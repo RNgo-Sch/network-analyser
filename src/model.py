@@ -20,7 +20,7 @@ class UniFlow:
         
         # packet information
         self.first_pkt_id = first_pkt_id
-        self.packets_n = 1
+        self.packets_n = 0
 
         # other information
         self.protocol = protocol
@@ -86,6 +86,7 @@ class Network:
     def add_edge(self, flow: UniFlow):
         if flow not in self.edges:
             self.edges.append(flow)
+        flow.add_packet()
 
     def enumerate_hosts(self):
         """This function creates a list of hosts, based on source IDs compiled among all edges"""
