@@ -20,7 +20,7 @@ class UniFlow:
         
         # packet information
         self.first_pkt_id = first_pkt_id
-        self.packets_n = 0
+        self.packets_n = 1
 
         # other information
         self.protocol = protocol
