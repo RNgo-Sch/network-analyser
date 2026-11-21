@@ -67,5 +67,35 @@ class Host:
     def __eq__(self, other):
         if isinstance(other, Host):
             return self.ip == other.ip
-        return NotImplemented
+        elif isinstance(other, str):
+            return self.ip == other
+        else:
+            return NotImplemented
 
+
+class Network:
+    """
+    This class documents the overall network, focusing on storing information in terms of edges
+    From stored edges, is can derive profiles of each individual host
+    """
+    def __init__(self):
+        # create empty sets
+        self.edges: list[UniFlow] = []
+        self.hosts: list[Host] = []
+
+    def add_edge(self, flow: UniFlow):
+        if flow not in self.edges:
+            self.edges.append(flow)
+
+    def enumerate_hosts(self):
+        """This function creates a list of hosts, based on source IDs compiled among all edges"""
+        for edge in self.edges:
+            if edge.source_ip not in self.hosts:
+                self.hosts.append(Host(edge.source_ip))
+                self.hosts[-1].add_edge(edge)
+            else: 
+                for host in self.hosts:
+                    if edge.source_ip == host.ip:
+                        host.add_edge(edge)
+                        break
+    
